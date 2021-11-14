@@ -217,7 +217,9 @@ def train(pop_size, n_generations, n_agents,
         run_name = None
 
     if using_wandb:
-        with open("wandb_api_key") as f:
+        abs_path = os.path.dirname(os.path.abspath(__file__))
+        file_name = abs_path + "/wandb_api_key"
+        with open(file_name) as f:
             wandb.login(key=f.readline())
 
         wandb.init(project="GARuck", entity="simonrosen42", config=config,
