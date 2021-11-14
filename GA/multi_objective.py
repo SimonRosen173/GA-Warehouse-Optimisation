@@ -101,7 +101,7 @@ class WarehouseGAModule(ruck.EaModule):
         if urg is None:
             self.urg = UniformRandomGrid()
 
-        self.start_locs = self.urg.start_locs
+        self.start_locs = self.urg.non_task_endpoints
         self.dropoff_locs = self.urg.dropoff_locs
 
         # self.train_loop_func = partial(train_loop_func, self)
@@ -136,8 +136,8 @@ class WarehouseGAModule(ruck.EaModule):
         # not object refs to those values.
         self._ray_eval = ray.remote(_eval).remote
 
-    def evaluate_values(self, values):
-        out = ray_map(self._ray_eval, values)
+    def evaluate_values(self, value_refs):
+        out = ray_map(self._ray_eval, value_refs)
         data = None
 
         NO_LOCS = CONFIG["no_opt_locs"]
@@ -177,6 +177,7 @@ class WarehouseGAModule(ruck.EaModule):
 
         if self.save_interval > -1 and (self.curr_gen == 0 or (self.curr_gen + 1) % self.save_interval == 0 or self.curr_gen + 1 == self.no_generations):
             # data = [[x, y] for (x, y) in out]
+            values = [ray.get(val_ref) for val_ref in value_refs]
             val_data = list(zip(values, out))
 
             file_name = os.path.join(wandb.run.dir, f"pop_{self.curr_gen+1}.pkl")
@@ -216,7 +217,7 @@ def train(pop_size, n_generations, n_agents,
         run_name = None
 
     if using_wandb:
-        wandb.init(project="Test", entity="simonrosen42", config=config, notes=run_notes, name=run_name)
+        wandb.init(project="GARuck", entity="simonrosen42", config=config, notes=run_notes, name=run_name)
 
         # define our custom x axis metric
         wandb.define_metric("generation")
@@ -248,11 +249,11 @@ def train(pop_size, n_generations, n_agents,
 
 
 def test():
-    train(pop_size=16, n_generations=10,
-          n_agents=5, n_timesteps=500,
+    train(pop_size=16, n_generations=50,
+          n_agents=60, n_timesteps=500,
           mut_tile_size=2, mut_tile_no=1,
-          using_wandb=False, log_interval=1, save_interval=1,
-          cluster_node=-1, run_notes="", run_name="")
+          using_wandb=True, log_interval=10, save_interval=10,
+          cluster_node=-1, run_notes="", run_name="60 Agents - First Test")
 
 
 if __name__ == "__main__":
