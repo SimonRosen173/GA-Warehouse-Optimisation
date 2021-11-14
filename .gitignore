@@ -6,3 +6,4 @@ MAPD/cooperative_astar.c
 **/__pycache__
 **/build
 **/wandb
+**/wandb_api_key

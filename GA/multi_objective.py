@@ -217,6 +217,9 @@ def train(pop_size, n_generations, n_agents,
         run_name = None
 
     if using_wandb:
+        with open("wandb_api_key") as f:
+            wandb.login(key=f.readline())
+
         wandb.init(project="GARuck", entity="simonrosen42", config=config,
                    notes=run_notes, name=run_name, tags=tags)
 
@@ -254,7 +257,7 @@ def test():
           n_agents=60, n_timesteps=500,
           mut_tile_size=2, mut_tile_no=1,
           using_wandb=True, log_interval=10, save_interval=10,
-          cluster_node=-1, run_notes="", run_name="60 Agents - First Test", tags=["test"])
+          cluster_node=-1, run_notes="", run_name="Test", tags=["test"])
 
 
 if __name__ == "__main__":
