@@ -7,7 +7,6 @@
 #PBS -e /mnt/lustre/users/srosen/test/test1.out
 #PBS -o /mnt/lustre/users/srosen/test/test1.err
 
-cd /mnt/lustre3p/users/srosen/GA-Warehouse-Optimisation
-pwd
+cd /mnt/lustre/users/srosen/GA-Warehouse-Optimisation
 
 python3 multi_obj_train.py 16 20 2 1 -1 "CHPC Test" "Test" 10 10
