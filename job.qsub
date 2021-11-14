@@ -1,7 +1,7 @@
 #PBS -l walltime=00:30:00
 #PBS -l select=1:ncpus=16:mpiprocs=16:mem=16gb
 #PBS -P CSCI1385
-#PBS -q test
+#PBS -q serial
 #PBS -M 1391995@students.wits.ac.za
 #PBS -V
 #PBS -e /mnt/lustre/users/srosen/test/test1.out

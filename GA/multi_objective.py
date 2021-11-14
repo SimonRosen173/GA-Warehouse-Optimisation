@@ -223,7 +223,7 @@ def train(pop_size, n_generations, n_agents,
             wandb.login(key=f.readline())
 
         wandb.init(project="GARuck", entity="simonrosen42", config=config,
-                   notes=run_notes, name=run_name, tags=tags)
+                   notes=run_notes, name=run_name, tags=tags, mode="offline")
 
         # define our custom x axis metric
         wandb.define_metric("generation")
