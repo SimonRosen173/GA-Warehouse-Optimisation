@@ -5,3 +5,4 @@ MAPD/cooperative_astar.cp39-win_amd64.pyd
 MAPD/cooperative_astar.c
 **/__pycache__
 **/build
+**/wandb
