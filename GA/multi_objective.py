@@ -197,7 +197,7 @@ def train(pop_size, n_generations, n_agents,
           n_timesteps, mut_tile_size, mut_tile_no,
           using_wandb, log_interval, save_interval,
           cluster_node,
-          run_notes, run_name):
+          run_notes, run_name, tags):
     # initialize ray to use the specified system resources
     ray.init()
 
@@ -217,7 +217,8 @@ def train(pop_size, n_generations, n_agents,
         run_name = None
 
     if using_wandb:
-        wandb.init(project="GARuck", entity="simonrosen42", config=config, notes=run_notes, name=run_name)
+        wandb.init(project="GARuck", entity="simonrosen42", config=config,
+                   notes=run_notes, name=run_name, tags=tags)
 
         # define our custom x axis metric
         wandb.define_metric("generation")
@@ -253,7 +254,7 @@ def test():
           n_agents=60, n_timesteps=500,
           mut_tile_size=2, mut_tile_no=1,
           using_wandb=True, log_interval=10, save_interval=10,
-          cluster_node=-1, run_notes="", run_name="60 Agents - First Test")
+          cluster_node=-1, run_notes="", run_name="60 Agents - First Test", tags=["test"])
 
 
 if __name__ == "__main__":
