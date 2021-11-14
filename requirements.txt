@@ -1,8 +1,8 @@
-numba
+numba==0.54.1
 wandb
 ruck==0.2.2
 deap
-ray
+ray==1.7.0
 networkx
 more-itertools
-numpy
+numpy==1.21.1
