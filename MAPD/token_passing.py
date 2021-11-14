@@ -2,8 +2,6 @@
 import time
 from typing import Type, Tuple, List, Set, Optional, Dict
 
-from Visualisation.vis import VisGrid
-
 from Graph.graph import GridGraph
 from Warehouse.grid import UniformRandomGrid, RealWarehouse
 
@@ -737,6 +735,7 @@ def main():
 
 
 if __name__ == "__main__":
+    from Visualisation.vis import VisGrid
     main()
     # benchmark_tp()
     # benchmark_warehouse()
