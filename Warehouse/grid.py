@@ -3,7 +3,6 @@ import os
 
 import numpy as np
 from typing import List, Tuple, Dict, Set, Optional
-from Visualisation.vis import VisGrid
 
 CONFIG = {
     # "opt_grid_start_x": 6,
@@ -193,6 +192,7 @@ def get_rand_valid_point(grid):
 
 
 def test_urg():
+    from Visualisation.vis import VisGrid
     urg = UniformRandomGrid()
     grid_arr = urg.get_uniform_random_grid()
     vis_grid = VisGrid(grid_arr, (950, 400))
@@ -200,6 +200,7 @@ def test_urg():
 
 
 def test_real():
+    from Visualisation.vis import VisGrid
     urg = RealWarehouse()
     grid_arr = urg.create_grid()
     vis_grid = VisGrid(grid_arr, (950, 400))
