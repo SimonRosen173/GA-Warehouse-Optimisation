@@ -1,0 +1,4 @@
+Empty - 0
+Obstructed - 1
+Task Endpoint - 2
+Non Task Endpoint - 3
