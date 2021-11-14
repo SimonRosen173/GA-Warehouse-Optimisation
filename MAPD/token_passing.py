@@ -693,7 +693,7 @@ def main():
     x_len = len(grid[0])
 
     no_agents = 60
-    max_t = 500
+    max_t = 600
 
     non_task_endpoints = real_warehouse.non_task_endpoints
     non_task_endpoints = [(x, y) for (y, x) in non_task_endpoints]
