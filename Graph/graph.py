@@ -1,5 +1,5 @@
 import networkx as nx
-from matplotlib import pyplot as plt
+
 # from Benchmark import Warehouse
 from networkx.algorithms.shortest_paths.astar import astar_path
 from networkx.algorithms.traversal.breadth_first_search import bfs_tree
@@ -14,6 +14,7 @@ def man_dist(node1, node2):
 
 
 def plot_graph(graph, file_name=None, figsize=(15, 15)):
+    from matplotlib import pyplot as plt
     full_G = graph
     plt.figure(figsize=figsize)
     pos = {(x, y): (y, -x) for x, y in full_G.nodes()}

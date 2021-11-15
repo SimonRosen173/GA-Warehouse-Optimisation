@@ -5,4 +5,7 @@ deap
 ray==1.7.0
 networkx
 more-itertools
-numpy==1.21.1
+numpy
+pandas
+setproctitle
+colorama
