@@ -1,4 +1,3 @@
-  GNU nano 2.9.3                                                job_script.slurm
 #!/bin/bash
 # specify a partition
 #SBATCH -p stampede
@@ -31,4 +30,4 @@ cd $SLURM_SUBMIT_DIR
 
 source activate gaenv
 
-python3 multi_obj_train.py 16 50 2 1 60 600 -1 "Small Scale Test" "GA Final 0.0" "online" 5 5
+python3 multi_obj_train.py 64 1000 2 1 60 600 $SLURM_JOB_NODELIST "Actual Test" "GA Final 1.9" "online" 5 5
