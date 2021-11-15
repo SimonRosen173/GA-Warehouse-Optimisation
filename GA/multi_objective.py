@@ -194,12 +194,12 @@ class WarehouseGAModule(ruck.EaModule):
 
 
 def train(pop_size, n_generations, n_agents,
-          n_timesteps, mut_tile_size, mut_tile_no,
+          n_timesteps, mut_tile_size, mut_tile_no, n_cores,
           using_wandb, wandb_mode, log_interval, save_interval,
           cluster_node,
           run_notes, run_name, tags):
     # initialize ray to use the specified system resources
-    ray.init()
+    ray.init(num_cpus=n_cores)
 
     config = {
         "pop_size": pop_size,

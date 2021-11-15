@@ -1,5 +1,7 @@
+#!/bin/bash
 #PBS -l walltime=00:20:00
-#PBS -l select=1:ncpus=1:mpiprocs=1:mem=16gb
+nprocs=4
+#PBS -l select=1:ncpus=$nprocs:mpiprocs=2:mem=16gb
 #PBS -P CSCI1385
 #PBS -q test
 #PBS -M 1391995@students.wits.ac.za
@@ -10,4 +12,12 @@
 
 cd /mnt/lustre/users/srosen/GA-Warehouse-Optimisation
 
-source /mnt/lustre/users/srosen/ga/bin/activate
+module load chpc/python/anaconda/3-2019.10
+conda activate /mnt/lustre/users/srosen/gaenv
+
+# "pop_size,n_generations,mut_tile_size,mut_tile_no,"
+# "n_agents,n_timesteps,n_cores,"
+# "cluster_node,run_notes,run_name,"
+# "wandb_mode,log_interval,save_interval"
+
+python3 multi_obj_train.py 16 20 2 1 5 600 $nprocs -1 "CHPC Test" "CHPC Test" "offline" 5 5

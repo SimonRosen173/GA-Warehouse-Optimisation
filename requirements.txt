@@ -1,4 +1,4 @@
-numba==0.54.1
+numba
 wandb
 ruck==0.2.2
 deap
