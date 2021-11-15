@@ -1,16 +1,16 @@
-#!/bin/bash
-#PBS -l walltime=00:20:00
-nprocs=4
-#PBS -l select=1:ncpus=$nprocs:mpiprocs=2:mem=16gb
+#PBS -l walltime=01:00:00
+#PBS -l select=1:ncpus=16:mpiprocs=1:mem=16gb
 #PBS -P CSCI1385
-#PBS -q test
+#PBS -q serial
 #PBS -M 1391995@students.wits.ac.za
 #PBS -V
-#PBS -e /mnt/lustre/users/srosen/test/test1.err
-#PBS -o /mnt/lustre/users/srosen/test/test1.out
-#PBS -N test
+#PBS -e /mnt/lustre/users/srosen/ga_logs/run1.err
+#PBS -o /mnt/lustre/users/srosen/ga_logs/run1.out
+#PBS -N GA1
 
 cd /mnt/lustre/users/srosen/GA-Warehouse-Optimisation
+
+echo "Started"
 
 module load chpc/python/anaconda/3-2019.10
 conda activate /mnt/lustre/users/srosen/gaenv
@@ -20,4 +20,4 @@ conda activate /mnt/lustre/users/srosen/gaenv
 # "cluster_node,run_notes,run_name,"
 # "wandb_mode,log_interval,save_interval"
 
-python3 multi_obj_train.py 16 20 2 1 5 600 $nprocs -1 "CHPC Test" "CHPC Test" "offline" 5 5
+python3 multi_obj_train.py 16 50 2 1 60 600 16 -1 "CHPC Test" "CHPC Run 1" "offline" 5 5

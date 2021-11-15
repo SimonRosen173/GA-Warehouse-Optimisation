@@ -194,12 +194,12 @@ class WarehouseGAModule(ruck.EaModule):
 
 
 def train(pop_size, n_generations, n_agents,
-          n_timesteps, mut_tile_size, mut_tile_no,
+          n_timesteps, mut_tile_size, mut_tile_no, n_cores,
           using_wandb, wandb_mode, log_interval, save_interval,
           cluster_node,
           run_notes, run_name, tags):
     # initialize ray to use the specified system resources
-    ray.init()
+    ray.init(num_cpus=n_cores)
 
     config = {
         "pop_size": pop_size,
@@ -217,10 +217,10 @@ def train(pop_size, n_generations, n_agents,
         run_name = None
 
     if using_wandb:
-        # abs_path = os.path.dirname(os.path.abspath(__file__))
-        # file_name = abs_path + "/wandb_api_key"
-        # with open(file_name) as f:
-        #     wandb.login(key=f.readline())
+        abs_path = os.path.dirname(os.path.abspath(__file__))
+        file_name = abs_path + "/wandb_api_key"
+        with open(file_name) as f:
+            wandb.login(key=f.readline())
 
         wandb.init(project="GARuck", entity="simonrosen42", config=config,
                    notes=run_notes, name=run_name, tags=tags, mode=wandb_mode)
