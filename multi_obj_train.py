@@ -5,7 +5,7 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser()
 
     parse_args = "pop_size,n_generations,mut_tile_size,mut_tile_no," \
-                 "n_agents,n_timesteps,n_cores," \
+                 "n_agents,n_timesteps," \
                  "cluster_node,run_notes,run_name," \
                  "wandb_mode,log_interval,save_interval"
     parse_args = parse_args.split(",")
@@ -20,7 +20,7 @@ if __name__ == "__main__":
     n_agents = int(args.n_agents)
     n_timesteps = int(args.n_timesteps)
 
-    n_cores = int(args.n_cores)
+    # n_cores = int(args.n_cores)
     # n_agents = 5
     # n_timesteps = 600
 
@@ -41,7 +41,7 @@ if __name__ == "__main__":
         using_wandb = False
 
     multi_objective.train(pop_size, n_generations, n_agents,
-                 n_timesteps, mut_tile_size, mut_tile_no, n_cores,
+                 n_timesteps, mut_tile_size, mut_tile_no,
                  using_wandb, wandb_mode, log_interval, save_interval,
                  cluster_node,
                  run_notes, run_name, ["run_1"])
