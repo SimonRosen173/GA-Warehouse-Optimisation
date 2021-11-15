@@ -5,20 +5,20 @@ import numpy as np
 from typing import List, Tuple, Dict, Set, Optional
 
 CONFIG = {
-    # "opt_grid_start_x": 6,
     "no_storage_locs": 560,
-    # "opt_grid_shape": (22, 44),
+    "opt_grid_shape": (22, 44),
+    "static_grid_shape": (22, 44),
 }
+
+CONFIG["no_static_locs"] = CONFIG["static_grid_shape"][0] * CONFIG["static_grid_shape"][1]
+CONFIG["no_opt_locs"] = CONFIG["opt_grid_shape"][0] * CONFIG["opt_grid_shape"][1]
+CONFIG["opt_grid_start_x"] = CONFIG["static_grid_shape"][1]+1
 
 EMPTY = 0
 PICKUP = 1
 DROPOFF = 2
 OBSTACLE = 3
 NON_TASK_ENDPOINT = 4
-
-# Init config
-# CONFIG["no_opt_locs"] = CONFIG["opt_grid_shape"][0]*CONFIG["opt_grid_shape"][1]
-# CONFIG["no_static_locs"] = CONFIG["opt_grid_shape"][0]*CONFIG["opt_grid_start_x"]
 
 
 def print_grid(grid: list):
@@ -63,10 +63,10 @@ class RealWarehouse:
         self._static_grid_shape = (22, 14)
         self._opt_grid_shape = (22, 44)
 
-        CONFIG["no_storage_locs"] = 560
-        CONFIG["no_static_locs"] = self._static_grid_shape[0] * self._static_grid_shape[1]
-        CONFIG["no_opt_locs"] = self._opt_grid_shape[0] * self._opt_grid_shape[1]
-        CONFIG["opt_grid_start_x"] = self._static_grid_shape[1]+1
+        # CONFIG["no_storage_locs"] = 560
+        # CONFIG["no_static_locs"] = self._static_grid_shape[0] * self._static_grid_shape[1]
+        # CONFIG["no_opt_locs"] = self._opt_grid_shape[0] * self._opt_grid_shape[1]
+        # CONFIG["opt_grid_start_x"] = self._static_grid_shape[1]+1
 
         self._static_grid = self.create_static_grid()
 
@@ -103,13 +103,13 @@ class UniformRandomGrid:
         self.dropoff_locs = []
         self.non_task_endpoints = []
 
-        self._static_grid_shape = (22, 14)
-        self._opt_grid_shape = (22, 44)
+        self._static_grid_shape = CONFIG["static_grid_shape"]  # (22, 14)
+        self._opt_grid_shape = CONFIG["opt_grid_shape"]  # (22, 44)
 
-        CONFIG["no_storage_locs"] = 560
-        CONFIG["no_static_locs"] = self._static_grid_shape[0] * self._static_grid_shape[1]
-        CONFIG["no_opt_locs"] = self._opt_grid_shape[0] * self._opt_grid_shape[1]
-        CONFIG["opt_grid_start_x"] = self._static_grid_shape[1]+1
+        # CONFIG["no_storage_locs"] = 560
+        # CONFIG["no_static_locs"] = self._static_grid_shape[0] * self._static_grid_shape[1]
+        # CONFIG["no_opt_locs"] = self._opt_grid_shape[0] * self._opt_grid_shape[1]
+        # CONFIG["opt_grid_start_x"] = self._static_grid_shape[1]+1
 
         self._static_grid = self.create_static_grid()
 

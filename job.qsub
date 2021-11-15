@@ -1,12 +1,13 @@
-#PBS -l walltime=00:30:00
-#PBS -l select=1:ncpus=16:mpiprocs=16:mem=16gb
+#PBS -l walltime=00:20:00
+#PBS -l select=1:ncpus=16:mpiprocs=1:mem=16gb
 #PBS -P CSCI1385
 #PBS -q serial
 #PBS -M 1391995@students.wits.ac.za
 #PBS -V
-#PBS -e /mnt/lustre/users/srosen/test/test1.out
-#PBS -o /mnt/lustre/users/srosen/test/test1.err
+#PBS -e /mnt/lustre/users/srosen/test/test1.err
+#PBS -o /mnt/lustre/users/srosen/test/test1.out
+#PBS -N test
 
 cd /mnt/lustre/users/srosen/GA-Warehouse-Optimisation
 
-python3 multi_obj_train.py 16 20 2 1 -1 "CHPC Test" "Test" 10 10
+python3 multi_obj_train.py 16 20 2 1 5 600 -1 "CHPC Test" "Test" "offline" 5 5
