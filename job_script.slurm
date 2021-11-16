@@ -30,4 +30,4 @@ cd $SLURM_SUBMIT_DIR
 
 source activate gaenv
 
-python3 multi_obj_train.py 64 2000 2 1 20 500 $SLURM_JOB_NODELIST "" "GA 20a 2.3" "online" 1 5
+python3 multi_obj_train.py 64 2000 2 1 20 -1 $SLURM_JOB_NODELIST "" "GA 20a 2.3" "online" 1 5

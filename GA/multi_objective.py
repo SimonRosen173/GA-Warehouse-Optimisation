@@ -199,7 +199,10 @@ def train(pop_size, n_generations, n_agents,
           cluster_node,
           run_notes, run_name, tags):
     # initialize ray to use the specified system resources
-    ray.init(num_cpus=n_cores)
+    if n_cores <= 0:
+        ray.init()
+    else:
+        ray.init(num_cpus=n_cores)
 
     config = {
         "pop_size": pop_size,
