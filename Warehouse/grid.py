@@ -7,7 +7,7 @@ from typing import List, Tuple, Dict, Set, Optional
 CONFIG = {
     "no_storage_locs": 560,
     "opt_grid_shape": (22, 44),
-    "static_grid_shape": (22, 44),
+    "static_grid_shape": (22, 14),
 }
 
 CONFIG["no_static_locs"] = CONFIG["static_grid_shape"][0] * CONFIG["static_grid_shape"][1]

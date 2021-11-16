@@ -13,11 +13,11 @@ def main():
 
 
 def test():
-    with open("pops/pop_40.pkl", "rb") as f:
+    with open("pops/pop_535.pkl", "rb") as f:
         pop_data = pickle.load(f)
     grid = pop_data[0][0].tolist()
-    vis_grid = VisGrid(grid, (900, 400))
-    vis_grid.save_to_png("imgs/grid")
+    vis_grid = VisGrid(grid, (1250, 400))
+    vis_grid.save_to_png("imgs/grid_535")
     print(grid)
 
 
