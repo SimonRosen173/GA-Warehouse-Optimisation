@@ -15,9 +15,13 @@ echo "Started"
 module load chpc/python/anaconda/3-2019.10
 conda activate /mnt/lustre/users/srosen/gaenv
 
+cd MAPD
+python3 setup.py build_ext --inplace
+cd ..
+
 # "pop_size,n_generations,mut_tile_size,mut_tile_no,"
 # "n_agents,n_timesteps,n_cores,"
 # "cluster_node,run_notes,run_name,"
 # "wandb_mode,log_interval,save_interval"
 
-python3 -u {script} {args} 2>&1 | tee /mnt/lustre/users/srosen/ga_logs/{log_name}.log
+python3 -u {script} {args} 2>&1 | tee /mnt/lustre/users/srosen/logs/{log_name}.log

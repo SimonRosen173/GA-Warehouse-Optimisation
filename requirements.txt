@@ -9,3 +9,4 @@ numpy
 pandas
 setproctitle
 colorama
+Cython

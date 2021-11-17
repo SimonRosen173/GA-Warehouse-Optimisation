@@ -101,7 +101,7 @@ if __name__ == "__main__":
     wandb_mode = "\"offline\""
     log_interval = 1
     save_interval = 50
-    log_folder_path = "\"[path]\""
+    log_folder_path = "\"/mnt/lustre/users/srosen/logs\""
     log_name = "\"" + base_name + "_{job_id}\""
 
     args = [pop_size, n_generations, mut_tile_size, mut_tile_no, n_agents, n_timesteps, n_cpus, cluster_node,
