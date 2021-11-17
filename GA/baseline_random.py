@@ -20,17 +20,11 @@ from ruck.external.ray import *
 from GA.operators import mate_njit, mutate
 from Warehouse.grid import UniformRandomGrid
 
-from Logging.log import MultiObjLog
-
-# from Benchmark import Warehouse
-# from Grid.GridWrapper import get_no_unreachable_locs
-# from Visualisations.Vis import VisGrid
-
 from Warehouse.grid import CONFIG
 from MAPD.token_passing import TokenPassing
 
 
-def evaluate(values: np.ndarray, no_agents: int, no_timesteps: int, start_locs, dropoff_locs):
+def evaluate(values: np.ndarray, no_agents: int, no_timesteps: int, start_locs):
     try:
         grid: List = values.tolist()
         y_len = len(grid)
@@ -61,7 +55,7 @@ def evaluate(values: np.ndarray, no_agents: int, no_timesteps: int, start_locs, 
     return unique_tasks_completed, reachable_locs
 
 
-def gen_starting_points_rand(pop_size, urg):
+def gen_rand_pts(pop_size, urg):
     return [ray.put(urg.get_uniform_random_grid())
             for _ in range(pop_size)]
 
@@ -83,9 +77,7 @@ class WarehouseGAModule(ruck.EaModule):
             log_interval: int = -1,
             save_interval: int = -1,
             no_generations: int = 0,
-            pop_save_dir: str = "",
-            log_folder_base_path: str = "",
-            log_name: str = ""
+            pop_save_dir: str = ""
     ):
         self._population_size = population_size
         self.save_hyperparameters()
@@ -108,16 +100,12 @@ class WarehouseGAModule(ruck.EaModule):
         self.start_locs = self.urg.non_task_endpoints
         self.dropoff_locs = self.urg.dropoff_locs
 
-        self.multi_obj_log: Optional[MultiObjLog] = None
-
-        if log_name != "":
-            self.multi_obj_log = MultiObjLog(log_folder_base_path, log_name, log_interval, save_interval,
-                                             no_generations, CONFIG["no_opt_locs"])
-
         # self.train_loop_func = partial(train_loop_func, self)
         def _mate(arr_1: np.ndarray, arr_2: np.ndarray):
-            return mate_njit(arr_1, arr_2,
-                             tile_size=self.mut_tile_size, tile_no=self.mut_tile_no)
+            return arr_1, arr_2
+
+        def _mutate(arr: np.ndarray):
+            return arr
 
         # implement the required functions for `EaModule`
         self.generate_offspring, self.select_population = R.make_ea(
@@ -126,10 +114,10 @@ class WarehouseGAModule(ruck.EaModule):
             # decorate the functions with `ray_remote_put` which automatically
             # `ray.get` arguments that are `ObjectRef`s and `ray.put`s returned results
             mate_fn=ray_remote_puts(_mate).remote,
-            mutate_fn=ray_remote_put(mutate).remote,
+            mutate_fn=ray_remote_put(_mutate).remote,
             # efficient to compute locally
             # select_fn=functools.partial(R.select_tournament, k=3),
-            select_fn=select_nsga2,
+            select_fn=select_nsga2, # This doesn't really matter but will break ruck if excluded
             p_mate=self.hparams.p_mate,
             p_mutate=self.hparams.p_mutate,
             # ENABLE multiprocessing
@@ -137,7 +125,9 @@ class WarehouseGAModule(ruck.EaModule):
         )
 
         def _eval(values):
-            return evaluate(values, no_agents, no_timesteps, self.start_locs, self.dropoff_locs)
+            # Ignores values
+            values = self.urg.get_uniform_random_grid()
+            return evaluate(values, no_agents, no_timesteps, self.start_locs)
 
         # eval_partial = partial()
         # eval function, we need to cache it on the class to prevent
@@ -148,13 +138,7 @@ class WarehouseGAModule(ruck.EaModule):
 
     def evaluate_values(self, value_refs):
         out = ray_map(self._ray_eval, value_refs)
-        self.evals += len(out)
         data = None
-
-        if self.multi_obj_log is not None:
-            vals = [ray.get(val_ref) for val_ref in value_refs]
-            self.multi_obj_log.log(fitnesses=out, population=vals,
-                                   generation=self.curr_gen + 1, evals=self.evals)
 
         NO_LOCS = CONFIG["no_opt_locs"]
 
@@ -163,7 +147,7 @@ class WarehouseGAModule(ruck.EaModule):
             data = [[x, y/NO_LOCS, gen] for (x, y) in out]
             table = wandb.Table(data=data, columns=["unique_tasks_completed", "perc_reachable_locs", "gen"])
             wandb.log({f"fitness_scatterplot": wandb.plot.scatter(table, "unique_tasks_completed", "perc_reachable_locs",
-                                                                               title=f"Gen = {gen} - Unique Tasks Completed Vs Percentage of Locs Reachable")})
+                                                                  title=f"Gen = {gen} - Unique Tasks Completed Vs Percentage of Locs Reachable")})
 
         # wandb logging
         if self.log_interval > -1:
@@ -206,13 +190,14 @@ class WarehouseGAModule(ruck.EaModule):
         return out
 
     def gen_starting_values(self):
-        return gen_starting_points_rand(self.hparams.population_size, self.urg)
+        return gen_rand_pts(self.hparams.population_size, self.urg)
 
 
-def train(pop_size, n_generations, n_agents,
-          n_timesteps, mut_tile_size, mut_tile_no, n_cores,
-          using_wandb, wandb_mode, log_interval, save_interval,
-          log_folder_path, log_name,
+def train(pop_size, n_generations,
+          n_agents, n_timesteps,
+          n_cores,
+          using_wandb, wandb_mode,
+          log_interval, save_interval,
           cluster_node,
           run_notes, run_name, tags):
     # initialize ray to use the specified system resources
@@ -227,8 +212,8 @@ def train(pop_size, n_generations, n_agents,
         "no_agents": n_agents,
         "no_timesteps": n_timesteps,
         "fitness": "unique_tasks_completed, reachable_locs",
-        "mut_tile_size": mut_tile_size,
-        "mut_tile_no": mut_tile_no,
+        # "mut_tile_size": 1,
+        # "mut_tile_no": 1,
         "cluster_node": cluster_node,
         "mate_func": "tiled_crossover"
     }
@@ -266,22 +251,10 @@ def train(pop_size, n_generations, n_agents,
     module = WarehouseGAModule(population_size=pop_size,
                                no_generations=n_generations, no_agents=n_agents,
                                no_timesteps=n_timesteps,
-                               mut_tile_size=mut_tile_size, mut_tile_no=mut_tile_no,
-                               log_interval=log_interval, save_interval=save_interval,
-                               log_folder_base_path=log_folder_path, log_name=log_name)
+                               mut_tile_size=1, mut_tile_no=1,  # Not used so use any +ve number
+                               log_interval=log_interval, save_interval=save_interval)
     trainer = Trainer(generations=n_generations, progress=True)
     pop, logbook, halloffame = trainer.fit(module)
 
     wandb.finish()
 
-
-def test():
-    train(pop_size=16, n_generations=50,
-          n_agents=60, n_timesteps=500,
-          mut_tile_size=2, mut_tile_no=1,
-          using_wandb=True, log_interval=10, save_interval=10,
-          cluster_node=-1, run_notes="", run_name="Test Offline", tags=["test"])
-
-
-if __name__ == "__main__":
-    test()

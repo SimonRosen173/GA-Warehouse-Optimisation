@@ -1,0 +1,24 @@
+#PBS -l walltime={wall_time}
+#PBS -l select=1:ncpus={n_cpus}:mpiprocs=1:mem={mem}
+#PBS -P CSCI1385
+#PBS -q {partition}
+#PBS -M 1391995@students.wits.ac.za
+#PBS -V
+#PBS -e /mnt/lustre/users/srosen/ga_logs/{pbs_log_name}.err
+#PBS -o /mnt/lustre/users/srosen/ga_logs/{pbs_log_name}.out
+#PBS -N {job_name}
+
+cd /mnt/lustre/users/srosen/GA-Warehouse-Optimisation
+
+echo "Started"
+
+module load chpc/python/anaconda/3-2019.10
+conda activate /mnt/lustre/users/srosen/gaenv
+
+# "pop_size,n_generations,mut_tile_size,mut_tile_no,"
+# "n_agents,n_timesteps,n_cores,"
+# "cluster_node,run_notes,run_name,"
+# "wandb_mode,log_interval,save_interval"
+
+python3 -u {script} {args} 2>&1 | tee /mnt/lustre/users/srosen/ga_logs/{log_name}.log
+#python3 multi_obj_train.py 64 1000 2 1 60 600 24 -1 "" "Run 2.9" "offline" 50 50

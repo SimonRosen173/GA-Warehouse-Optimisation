@@ -7,3 +7,6 @@ MAPD/cooperative_astar.c
 **/build
 **/wandb
 **/wandb_api_key
+Analysis/imgs/**
+Analysis/pops/**
+**/tmp
