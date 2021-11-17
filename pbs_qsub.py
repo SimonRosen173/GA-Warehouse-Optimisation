@@ -56,12 +56,13 @@ def submit_multiple_jobs(n_jobs, resource_reqs, partition,
                          script, script_args):
     assert n_jobs <= 10, "n_jobs cannot be greater than 10."
 
+    orig_script_args = script_args.copy()
     clear_tmp_qsub_dir()
     template_str = get_template_str()
 
     # if {job_id} is in args then replace that with current job_id
     for job_id in range(n_jobs):
-        script_args = [arg.replace("{job_id}", str(job_id)) for arg in script_args]
+        script_args = [arg.replace("{job_id}", str(job_id)) for arg in orig_script_args]
         qsub_file_name = f"job_{job_id}.qsub"
         pbs_log_name = f"{pbs_log_name_prefix}_{job_id}"
         log_name = f"{log_name_prefix}_{job_id}"
@@ -81,14 +82,14 @@ if __name__ == "__main__":
     n_jobs = 2
 
     resource_reqs = {
-        "wall_time": "36:00:00",
+        "wall_time": "72:00:00",
         "n_cpus": "24",
         "mem": "16gb",
     }
     base_name = "ga60a2"
 
     pop_size = 64
-    n_generations = 1000
+    n_generations = 4000
     mut_tile_size = 2
     mut_tile_no = 1
     n_agents = 60
