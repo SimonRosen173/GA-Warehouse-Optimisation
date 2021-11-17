@@ -21,4 +21,3 @@ conda activate /mnt/lustre/users/srosen/gaenv
 # "wandb_mode,log_interval,save_interval"
 
 python3 -u {script} {args} 2>&1 | tee /mnt/lustre/users/srosen/ga_logs/{log_name}.log
-#python3 multi_obj_train.py 64 1000 2 1 60 600 24 -1 "" "Run 2.9" "offline" 50 50

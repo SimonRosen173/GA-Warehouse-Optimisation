@@ -77,17 +77,43 @@ def submit_multiple_jobs(n_jobs, resource_reqs, partition,
 
 if __name__ == "__main__":
     clear_tmp_qsub_dir()
-
     template_str = get_template_str()
+
+    n_jobs = 5
+
     resource_reqs = {
         "wall_time": "36:00:00",
         "n_cpus": "24",
         "mem": "16gb",
     }
-    args = "64 1000 2 1 60 600 24 -1 "" ""Run {job_id}"" ""offline"" 1 50".split(" ")
+    base_name = "ga60a2"
 
-    submit_multiple_jobs(10, resource_reqs, "smp", "test", "test", "test",
-                         "multi_obj_train.py", args)
+    pop_size = 64
+    n_generations = 1000
+    mut_tile_size = 2
+    mut_tile_no = 1
+    n_agents = 60
+    n_timesteps = 500
+    n_cpus = resource_reqs["n_cpus"]
+    cluster_node = -1
+    run_notes = """Notes"""
+    run_name = "\"" + base_name + ".{job_id}\""
+    wandb_mode = "\"offline\""
+    log_interval = 1
+    save_interval = 50
+    log_folder_path = "\"[path]\""
+    log_name = "\"" + base_name + "_{job_id}\""
 
-    clear_tmp_qsub_dir()
+    args = [pop_size, n_generations, mut_tile_size, mut_tile_no, n_agents, n_timesteps, n_cpus, cluster_node,
+            run_notes, run_name, wandb_mode, log_interval, save_interval, log_folder_path, log_name]
+    args = [str(arg) for arg in args]
+
+    # 16 20 2 1 5 600 4 -1 "Test" "Test" "disabled" 1 1 "Logs" "test"
+    # args = f"64 1000 2 1 60 600 {resource_reqs['n_cpus']} -1 ""Run"" ""Run {job_id}"" ""offline"" 1 50".split(" ")
+
+    submit_multiple_jobs(n_jobs, resource_reqs, partition="smp",
+                         pbs_log_name_prefix=base_name, log_name_prefix=base_name, job_name_prefix=base_name,
+                         script="multi_obj_train.py", script_args=args)
+
+    # clear_tmp_qsub_dir()
 

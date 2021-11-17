@@ -10,3 +10,4 @@ MAPD/cooperative_astar.c
 Analysis/imgs/**
 Analysis/pops/**
 **/tmp
+Logs/**

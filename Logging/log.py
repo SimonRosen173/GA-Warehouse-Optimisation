@@ -71,7 +71,7 @@ class MultiObjLog:
                 "unique_tasks_completed": unique_tasks_completed,
                 "perc_reachable_locs": perc_reachable_locs
             }
-            csv_path = f"{self.log_folder_path}/fitness/gen_{generation}.csv"
+            csv_path = f"{self.log_folder_path}/fitnesses/gen_{generation}.csv"
             df = pd.DataFrame.from_dict(df_dict)
             df["pop"] = population
             df.to_csv(csv_path, index=False)
