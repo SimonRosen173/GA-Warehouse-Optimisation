@@ -48,8 +48,7 @@ def create_qsub(template_str, qsub_file_name, resource_reqs, partition,
 
 
 def execute_qsub_file(file_path):
-    os.system(f"qsub ""{file_path}""")
-    pass
+    os.system(f"qsub \"{file_path}\"")
 
 
 def submit_multiple_jobs(n_jobs, resource_reqs, partition,
@@ -79,7 +78,7 @@ if __name__ == "__main__":
     clear_tmp_qsub_dir()
     template_str = get_template_str()
 
-    n_jobs = 5
+    n_jobs = 2
 
     resource_reqs = {
         "wall_time": "36:00:00",
