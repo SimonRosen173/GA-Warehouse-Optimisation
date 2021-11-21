@@ -24,4 +24,4 @@ cd ..
 # "cluster_node,run_notes,run_name,"
 # "wandb_mode,log_interval,save_interval"
 
-python3 -u {script} {args} 2>&1 | tee /mnt/lustre/users/srosen/logs/{log_name}.log
+python3 -u {script} {args} 2>&1 | tee {log_folder_path}/{log_name}.log

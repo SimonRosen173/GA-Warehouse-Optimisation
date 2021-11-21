@@ -18,7 +18,7 @@ def get_template_str():
 
 
 def create_qsub(template_str, qsub_file_name, resource_reqs, partition,
-                pbs_log_name, log_name, job_name,
+                pbs_log_name, log_name, log_folder_path, job_name,
                 script, script_args):
 
     qsub_str = template_str
@@ -32,6 +32,7 @@ def create_qsub(template_str, qsub_file_name, resource_reqs, partition,
         "pbs_log_name": pbs_log_name,
         "job_name": job_name,
         "log_name": log_name,
+        "log_folder_path": log_folder_path,
         "script": script,
         "args": args_str
     }
@@ -52,7 +53,8 @@ def execute_qsub_file(file_path):
 
 
 def submit_multiple_jobs(n_jobs, resource_reqs, partition,
-                         pbs_log_name_prefix, log_name_prefix, job_name_prefix,
+                         pbs_log_name_prefix, log_name_prefix, log_folder_path,
+                         job_name_prefix,
                          script, script_args):
     assert n_jobs <= 10, "n_jobs cannot be greater than 10."
 
@@ -69,13 +71,13 @@ def submit_multiple_jobs(n_jobs, resource_reqs, partition,
         job_name = f"{job_name_prefix}_{job_id}"
 
         qsub_file_path = create_qsub(template_str, qsub_file_name, resource_reqs,
-                                     partition, pbs_log_name, log_name, job_name, script,
-                                     script_args)
+                                     partition, pbs_log_name, log_name, log_folder_path,
+                                     job_name, script, script_args)
         execute_qsub_file(qsub_file_path)
     pass
 
 
-if __name__ == "__main__":
+def multi_obj_train():
     clear_tmp_qsub_dir()
     template_str = get_template_str()
 
@@ -101,19 +103,66 @@ if __name__ == "__main__":
     wandb_mode = "\"offline\""
     log_interval = 1
     save_interval = 50
-    log_folder_path = "\"/mnt/lustre/users/srosen/logs\""
+    log_folder_path = "/mnt/lustre/users/srosen/logs"
     log_name = "\"" + base_name + "_{job_id}\""
 
     args = [pop_size, n_generations, mut_tile_size, mut_tile_no, n_agents, n_timesteps, n_cpus, cluster_node,
-            run_notes, run_name, wandb_mode, log_interval, save_interval, log_folder_path, log_name]
+            run_notes, run_name, wandb_mode, log_interval, save_interval, "\"" + log_folder_path + "\"",
+            log_name]
     args = [str(arg) for arg in args]
 
     # 16 20 2 1 5 600 4 -1 "Test" "Test" "disabled" 1 1 "Logs" "test"
     # args = f"64 1000 2 1 60 600 {resource_reqs['n_cpus']} -1 ""Run"" ""Run {job_id}"" ""offline"" 1 50".split(" ")
 
     submit_multiple_jobs(n_jobs, resource_reqs, partition="smp",
-                         pbs_log_name_prefix=base_name, log_name_prefix=base_name, job_name_prefix=base_name,
+                         pbs_log_name_prefix=base_name, log_name_prefix=base_name,
+                         log_folder_path=log_folder_path,
+                         job_name_prefix=base_name,
                          script="multi_obj_train.py", script_args=args)
 
-    # clear_tmp_qsub_dir()
 
+def rand_evals():
+    clear_tmp_qsub_dir()
+    template_str = get_template_str()
+
+    n_jobs = 10
+
+    resource_reqs = {
+        "wall_time": "24:00:00",
+        "n_cpus": "24",
+        "mem": "16gb",
+    }
+    base_name = "rand60a2"
+
+    pop_size = 64
+    n_generations = 400
+    n_agents = 60
+    n_timesteps = 500
+    n_cpus = resource_reqs["n_cpus"]
+    cluster_node = -1
+    run_notes = """Notes"""
+    run_name = "\"" + base_name + ".{job_id}\""
+    wandb_mode = "\"offline\""
+    log_interval = 1
+    save_interval = 50
+    log_folder_path = "/mnt/lustre/users/srosen/rand_logs"
+    log_name = "\"" + base_name + "_{job_id}\""
+
+    args = [pop_size, n_generations, n_agents, n_timesteps, n_cpus, cluster_node,
+            run_notes, run_name, wandb_mode, log_interval, save_interval, "\"" + log_folder_path + "\"",
+            log_name]
+    args = [str(arg) for arg in args]
+
+    # 16 20 2 1 5 600 4 -1 "Test" "Test" "disabled" 1 1 "Logs" "test"
+    # args = f"64 1000 2 1 60 600 {resource_reqs['n_cpus']} -1 ""Run"" ""Run {job_id}"" ""offline"" 1 50".split(" ")
+
+    submit_multiple_jobs(n_jobs, resource_reqs, partition="smp",
+                         pbs_log_name_prefix=base_name, log_name_prefix=base_name,
+                         log_folder_path=log_folder_path,
+                         job_name_prefix=base_name,
+                         script="rand_baseline_eval.py", script_args=args)
+
+
+if __name__ == "__main__":
+    # multi_obj_train()
+    rand_evals()

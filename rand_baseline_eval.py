@@ -7,7 +7,8 @@ if __name__ == "__main__":
     parse_args = "pop_size,n_generations," \
                  "n_agents,n_timesteps,n_cores," \
                  "cluster_node,run_notes,run_name," \
-                 "wandb_mode,log_interval,save_interval"
+                 "wandb_mode,log_interval,save_interval," \
+                 "log_folder_path,log_name"
     parse_args = parse_args.split(",")
 
     for parse_arg in parse_args:
@@ -30,6 +31,9 @@ if __name__ == "__main__":
     log_interval = int(args.log_interval)
     save_interval = int(args.save_interval)
 
+    log_name = args.log_name
+    log_folder_path = args.log_folder_path
+
     if wandb_mode != "disabled":
         using_wandb = True
     else:
@@ -38,5 +42,6 @@ if __name__ == "__main__":
     baseline_random.train(pop_size, n_generations, n_agents,
                  n_timesteps, n_cores,
                  using_wandb, wandb_mode, log_interval, save_interval,
+                 log_folder_path, log_name,
                  cluster_node,
-                 run_notes, run_name, ["run_1"])
+                 run_notes, run_name, ["random"])
