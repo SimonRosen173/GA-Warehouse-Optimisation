@@ -11,3 +11,5 @@ Analysis/imgs/**
 Analysis/pops/**
 **/tmp
 Logs/**
+Analysis/imgs/*
+Analysis/pops/*

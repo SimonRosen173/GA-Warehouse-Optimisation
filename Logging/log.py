@@ -78,7 +78,7 @@ class MultiObjLog:
 
         # Save pops
         if self.curr_step % self.save_pop_interval == 0 or self.curr_step == self.max_steps:
-            data = zip(fitnesses, population)
+            data = list(zip(fitnesses, population))
             file_name = f"{self.log_folder_path}/pops/pop_{generation}.pkl"
             with open(file_name, "wb") as f:
                 pickle.dump(data, f)

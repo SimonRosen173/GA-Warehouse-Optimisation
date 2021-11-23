@@ -121,11 +121,12 @@ class WarehouseGAModule(ruck.EaModule):
             self.urg = urg
             if urg is None:
                 self.urg = UniformRandomGrid()
+            self.start_locs = self.urg.non_task_endpoints
+            self.dropoff_locs = self.urg.dropoff_locs
         else:
             self.real_warehouse = RealWarehouse()
-
-        self.start_locs = self.urg.non_task_endpoints
-        self.dropoff_locs = self.urg.dropoff_locs
+            self.start_locs = self.real_warehouse.non_task_endpoints
+            self.dropoff_locs = self.real_warehouse.dropoff_locs
 
         self.multi_obj_log: Optional[MultiObjLog] = None
 
@@ -300,7 +301,8 @@ def train(pop_size, n_generations, n_agents,
                                no_timesteps=n_timesteps,
                                mut_tile_size=mut_tile_size, mut_tile_no=mut_tile_no,
                                log_interval=log_interval, save_interval=save_interval,
-                               log_folder_base_path=log_folder_path, log_name=log_name)
+                               log_folder_base_path=log_folder_path, log_name=log_name,
+                               pop_init_mode=pop_init_mode, pop_init_p=pop_init_p)
     trainer = Trainer(generations=n_generations, progress=True)
     pop, logbook, halloffame = trainer.fit(module)
 

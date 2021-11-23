@@ -271,10 +271,10 @@ def test():
     #           log_folder_path, log_name,
     #           cluster_node,
     #           run_notes, run_name, tags
-    train(pop_size=50, n_generations=1,
+    train(pop_size=100, n_generations=1,
           n_agents=60, n_timesteps=500, n_cores=-1,
           using_wandb=False, wandb_mode="disabled", log_interval=1, save_interval=1,
-          log_folder_path="", log_name="",
+          log_folder_path="logs", log_name="real_warehouse",
           cluster_node=-1, run_notes="", run_name="Test Offline", tags=["test"])
 
 

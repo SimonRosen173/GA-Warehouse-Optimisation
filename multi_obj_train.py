@@ -56,7 +56,7 @@ if __name__ == "__main__":
           f"save_interval={save_interval}")
     print(f"log_folder_path={log_folder_path}, log_name={log_name}")
     print(f"cluster_node={cluster_node}")
-    print(f"run_notes={run_notes}, run_name=[\"run_1\"]")
+    print(f"run_notes={run_notes}, run_name={run_name}, tags=[\"run_1\"]")
     print(f"pop_init_mode={pop_init_mode}, pop_init_p={pop_init_p}")
     print(f"##############################\n")
 
