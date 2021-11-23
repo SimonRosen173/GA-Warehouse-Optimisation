@@ -18,7 +18,7 @@ from ruck import R, Trainer
 from ruck.external.ray import *
 
 from GA.operators import mate_njit, mutate
-from Warehouse.grid import UniformRandomGrid
+from Warehouse.grid import UniformRandomGrid, RealWarehouse
 
 from Logging.log import MultiObjLog
 
@@ -66,6 +66,17 @@ def gen_starting_points_rand(pop_size, urg):
             for _ in range(pop_size)]
 
 
+def gen_starting_points_real(pop_size, real_warehouse: RealWarehouse):
+    return [ray.put(real_warehouse.create_grid())
+            for _ in range(pop_size)]
+
+
+def gen_starting_points_real_p(pop_size, real_warehouse: RealWarehouse, p):
+    pop = [real_warehouse.create_grid() for _ in range(pop_size)]
+    pop = [mutate(grid, p) for grid in pop]
+    return [ray.put(grid) for grid in pop]
+
+
 class WarehouseGAModule(ruck.EaModule):
     def __init__(
             self,
@@ -85,7 +96,9 @@ class WarehouseGAModule(ruck.EaModule):
             no_generations: int = 0,
             pop_save_dir: str = "",
             log_folder_base_path: str = "",
-            log_name: str = ""
+            log_name: str = "",
+            pop_init_mode: str = "rand",  # Must be in ["rand", "real", "real_p"]
+            pop_init_p: float = 0.0
     ):
         self._population_size = population_size
         self.save_hyperparameters()
@@ -101,9 +114,15 @@ class WarehouseGAModule(ruck.EaModule):
         self.mut_tile_no = mut_tile_no
         self.mut_tile_size = mut_tile_size
 
-        self.urg = urg
-        if urg is None:
-            self.urg = UniformRandomGrid()
+        self.pop_init_mode = pop_init_mode
+        self.pop_init_p = pop_init_p
+
+        if pop_init_mode == "rand":
+            self.urg = urg
+            if urg is None:
+                self.urg = UniformRandomGrid()
+        else:
+            self.real_warehouse = RealWarehouse()
 
         self.start_locs = self.urg.non_task_endpoints
         self.dropoff_locs = self.urg.dropoff_locs
@@ -206,15 +225,28 @@ class WarehouseGAModule(ruck.EaModule):
         return out
 
     def gen_starting_values(self):
-        return gen_starting_points_rand(self.hparams.population_size, self.urg)
+        if self.pop_init_mode == "rand":
+            return gen_starting_points_rand(self.hparams.population_size, self.urg)
+        elif self.pop_init_mode == "real":
+            return gen_starting_points_real(self.hparams.population_size, self.real_warehouse)
+        elif self.pop_init_mode == "real_p":
+            return gen_starting_points_real_p(self.hparams.population_size, self.real_warehouse,
+                                              self.pop_init_p)
+        else:
+            raise NotImplementedError()
 
 
+# TODO: Finish stuff for adding pop_init_mode -> I.e. how population is initialised
 def train(pop_size, n_generations, n_agents,
-          n_timesteps, mut_tile_size, mut_tile_no, n_cores,
+          n_timesteps, mut_tile_size, mut_tile_no,
+          n_cores,
           using_wandb, wandb_mode, log_interval, save_interval,
           log_folder_path, log_name,
           cluster_node,
-          run_notes, run_name, tags):
+          run_notes, run_name, tags,
+          pop_init_p=0.0,
+          pop_init_mode="rand"  # Added pop_init_mode
+          ):
     # initialize ray to use the specified system resources
     if n_cores <= 0:
         ray.init()

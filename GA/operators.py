@@ -132,12 +132,12 @@ def mate_njit(arr_1: np.ndarray, arr_2: np.ndarray, tile_size, tile_no=1) -> Tup
 #     return mutate_njit(arr)
 
 
-def mutate(arr: np.ndarray) -> np.ndarray:
+def mutate(arr: np.ndarray, p: float = 0.05) -> np.ndarray:
     static_arr = arr[:, :opt_grid_start_x]
     opt_arr = arr[:, opt_grid_start_x:]
 
     opt_arr = opt_arr.astype(bool)
-    opt_arr = mutate_flip_bits(opt_arr)
+    opt_arr = mutate_flip_bits(opt_arr, p=p)
     opt_arr = opt_arr.astype(int)
 
     # Need to retain number of storage locs
