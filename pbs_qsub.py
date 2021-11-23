@@ -1,6 +1,7 @@
 # Code to submit multiple pbs jobs via qsub
 
 import os
+import argparse
 
 tmp_dir = "tmp/qsub_files/"
 
@@ -74,24 +75,36 @@ def submit_multiple_jobs(n_jobs, resource_reqs, partition,
                                      partition, pbs_log_name, log_name, log_folder_path,
                                      job_name, script, script_args)
         execute_qsub_file(qsub_file_path)
-    pass
 
 
 def multi_obj_train():
+    parser = argparse.ArgumentParser()
+
+    parse_args = "n_jobs,wall_time,base_name,n_generations,pop_init_mode,pop_init_p"
+
+    parse_args = parse_args.split(",")
+
+    for parse_arg in parse_args:
+        parser.add_argument(parse_arg)
+    args = parser.parse_args()
+
     clear_tmp_qsub_dir()
     template_str = get_template_str()
 
-    n_jobs = 2
+    pop_init_mode = args.pop_init_mode
+    pop_init_p = float(args.pop_init_p)
+
+    n_jobs = int(args.n_jobs)
 
     resource_reqs = {
-        "wall_time": "72:00:00",
+        "wall_time": args.wall_time,  # "72:00:00"
         "n_cpus": "24",
         "mem": "16gb",
     }
-    base_name = "ga60a2"
+    base_name = args.base_name # "ga_r0"
 
     pop_size = 64
-    n_generations = 4000
+    n_generations = args.n_generations  # 4000
     mut_tile_size = 2
     mut_tile_no = 1
     n_agents = 60
@@ -106,7 +119,8 @@ def multi_obj_train():
     log_folder_path = "/mnt/lustre/users/srosen/logs"
     log_name = "\"" + base_name + "_{job_id}\""
 
-    args = [pop_size, n_generations, mut_tile_size, mut_tile_no, n_agents, n_timesteps, n_cpus, cluster_node,
+    args = [pop_size, n_generations, mut_tile_size, mut_tile_no, pop_init_mode, pop_init_p,
+            n_agents, n_timesteps, n_cpus, cluster_node,
             run_notes, run_name, wandb_mode, log_interval, save_interval, "\"" + log_folder_path + "\"",
             log_name]
     args = [str(arg) for arg in args]
@@ -164,5 +178,5 @@ def rand_evals():
 
 
 if __name__ == "__main__":
-    # multi_obj_train()
-    rand_evals()
+    multi_obj_train()
+    # rand_evals()
